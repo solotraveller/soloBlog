@@ -1,0 +1,467 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/images/icons/favicon-16x16.png?v=2.6.2" type="image/png" sizes="16x16"><link rel="icon" href="/images/icons/favicon-32x32.png?v=2.6.2" type="image/png" sizes="32x32"><meta name="baidu-site-verification" content="code-DAlJpE2ztK"><meta name="description" content="关于JavaScript异步编程的一些笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="异步编程">
+<meta property="og:url" content="https://solot-raveller.github.io/2021/03/11/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="SoloBlog">
+<meta property="og:description" content="关于JavaScript异步编程的一些笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ftp.bmp.ovh/imgs/2021/03/095c22d8b27f0815.png">
+<meta property="article:published_time" content="2021-03-11T08:50:52.000Z">
+<meta property="article:modified_time" content="2021-03-11T08:54:32.447Z">
+<meta property="article:author" content="solotraveller">
+<meta property="article:tag" content="js关于">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ftp.bmp.ovh/imgs/2021/03/095c22d8b27f0815.png"><title>异步编程 | SoloBlog</title><link ref="canonical" href="https://solot-raveller.github.io/2021/03/11/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.6.2"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?9866f369e5de392882560c1f47a3afad';
+  hm.async = true;
+
+  if (false) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  assistSearch: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":false},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"light","wordWrap":true},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: undefined,
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 5.4.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">SoloBlog</div><div class="header-banner-info__subtitle">记录学习的技能和遇到的问题</div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">异步编程</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-11</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-11</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">994</span></span></div></header><div class="post-body"><h4 id="回调函数">
+          <a href="#回调函数" class="heading-link"><i class="fas fa-link"></i></a><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h4>
+      <p>回调的核心就是回调方A将本身即this传递给调用方B，目的是能让回调方A知晓调用方B的信息</p>
+
+        <img class="lazyload lazyload-gif" src="/images/loading.svg" data-src="https://ftp.bmp.ovh/imgs/2021/03/095c22d8b27f0815.png" style="zoom:67%;">
+      
+
+<ul>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">print</span>(<span class="params"></span>)</span>{</span><br><span class="line">    documnet.getElementById(<span class="string">"demo"</span>).innerHTML = <span class="string">"test"</span>;</span><br><span class="line">}</span><br><span class="line"><span class="built_in">setTimeout</span>(print,<span class="number">3000</span>)</span><br></pre></td></tr></tbody></table></div></figure>
+
+<p>   <code>setTimeout()</code>第一个参数是回调函数，第二个参数是<strong>毫秒</strong>，这个函数会产生一个子线程，3S后执行print()。也常写作：</p>
+   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"demo"</span>).innnerHTML = <span class="string">"test"</span>;</span><br><span class="line">},<span class="number">3000</span>);</span><br></pre></td></tr></tbody></table></div></figure>
+
+   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> timer1 = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"world"</span>);</span><br><span class="line">},<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span>{</span><br><span class="line">    <span class="built_in">clearTimeout</span>(timer1);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"hello"</span>);</span><br><span class="line">},<span class="number">500</span>)</span><br></pre></td></tr></tbody></table></div></figure>
+
+<p>   在 500ms 时取消了timer1的操作，所以只会输出<code>hello</code></p>
+</li>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> inter1 = seTInterval( <span class="function">()=&gt;</span>{</span><br><span class="line">    <span class="keyword">let</span> date = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">${date.getHours()}</span>:<span class="subst">${date.getMinutes()}</span>:<span class="subst">${date.getSecond()}</span>`</span>);</span><br><span class="line">},<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>( <span class="function">()=&gt;</span>{</span><br><span class="line">    <span class="built_in">clearInterval</span>(inter1);</span><br><span class="line">},<span class="number">5000</span>);</span><br></pre></td></tr></tbody></table></div></figure></li>
+</ul>
+<ul>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">callback</span>)</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo start'</span>);</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>{</span><br><span class="line">        callback()</span><br><span class="line">    },<span class="number">2000</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'foo end'</span>);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">foo( <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'callback'</span>);</span><br><span class="line">})</span><br></pre></td></tr></tbody></table></div></figure>
+
+</li>
+</ul>
+
+        <h4 id="异步ajax">
+          <a href="#异步ajax" class="heading-link"><i class="fas fa-link"></i></a><a href="#异步ajax" class="headerlink" title="异步ajax"></a>异步ajax</h4>
+      <ul>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="comment">//输出接受到的数据</span></span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"demo"</span>).innerHTML = xhr.requestText;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">xhr.onerror = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"demo"</span>).innerHTML = <span class="string">"error"</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">//发送异步请求</span></span><br><span class="line">xhr.open(<span class="string">"GET"</span>,<span class="string">"https://www.baidu.com/"</span>,<span class="literal">true</span>);</span><br><span class="line">xhr.send();</span><br></pre></td></tr></tbody></table></div></figure>
+
+<p>   <code>XMLHttpRequestd</code>的<code>onload</code>和<code>onerror</code>属性都是函数，分别在成功和失败时候调用。</p>
+</li>
+</ul>
+
+        <h4 id="Promise">
+          <a href="#Promise" class="heading-link"><i class="fas fa-link"></i></a><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h4>
+      <p><code>Promise</code>是<code>ES6</code>提供的类，用于书写复杂的异步任务。相当于一个状态机。</p>
+<ul>
+<li><p>  promise.then()：获取异步任务的正常结果。</p>
+</li>
+<li><p>  promise.catch()：获取异步任务的异常结果。</p>
+</li>
+<li><p>promise.finaly()：异步任务无论成功与否，都会执行。</p>
+</li>
+</ul>
+
+        <h5 id="resolve和-reject">
+          <a href="#resolve和-reject" class="heading-link"><i class="fas fa-link"></i></a><a href="#resolve和-reject" class="headerlink" title="resolve和 reject"></a>resolve和 reject</h5>
+      <ul>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> {</span><br><span class="line">    resolve(<span class="number">10</span> / <span class="number">100</span>)</span><br><span class="line">}).then(</span><br><span class="line">    resolve =&gt; {<span class="built_in">console</span>.log(resolve)},   <span class="comment">// 成功时执行</span></span><br><span class="line">    reject =&gt; {<span class="built_in">console</span>.log(reject);}	<span class="comment">// 失败时执行</span></span><br><span class="line">)</span><br></pre></td></tr></tbody></table></div></figure>
+
+<blockquote>
+<p>  0.1</p>
+</blockquote>
+</li>
+<li>   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'global begin'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span> <span class="title">timer1</span> (<span class="params"></span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'timer1 invoke'</span>)</span><br><span class="line">}, <span class="number">1800</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span> <span class="title">timer2</span> (<span class="params"></span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'timer2 invoke'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span> <span class="title">inner</span> (<span class="params"></span>) </span>{</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'inner invoke'</span>)</span><br><span class="line">    }, <span class="number">1000</span>)</span><br><span class="line">}, <span class="number">1000</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'global end'</span>)</span><br></pre></td></tr></tbody></table></div></figure>
+
+<blockquote>
+<p>  global  begin  </p>
+<p>  global  end  </p>
+<p>  timer2  invoke </p>
+<p>  timer1 invoke </p>
+<p>  inner invoke</p>
+</blockquote>
+</li>
+<li><p> 异步，但是太多繁琐</p>
+   <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"first"</span>);</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"second"</span>);</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">            consloe.log(<span class="string">"third"</span>);</span><br><span class="line">        },<span class="number">3000</span>);</span><br><span class="line">    },<span class="number">2000</span>);</span><br><span class="line">},<span class="number">1000</span>);</span><br></pre></td></tr></tbody></table></div></figure></li>
+</ul>
+
+        <h5 id="then">
+          <a href="#then" class="heading-link"><i class="fas fa-link"></i></a><a href="#then" class="headerlink" title="then"></a>then</h5>
+      <ul>
+<li><p>链式调用 </p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params"> resolve,reject</span>)</span>{</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"first"</span>);</span><br><span class="line">        resolve();</span><br><span class="line">    },<span class="number">1000</span>);</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve,reject</span>) </span>{</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">"second"</span>);</span><br><span class="line">            resolve();</span><br><span class="line">        },<span class="number">2000</span>);</span><br><span class="line">    });</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">"thrid"</span>);</span><br><span class="line">    },<span class="number">3000</span>);</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></div></figure>
+
+<p>  相同部分抽出作为新函素，简化为</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">print</span>(<span class="params">delay,message</span>)</span>{</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve,reject</span>)</span>{</span><br><span class="line">        setTImeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">            <span class="built_in">console</span>.log(message);</span><br><span class="line">            resolve();</span><br><span class="line">        },delay);</span><br><span class="line">    });</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">//  调用   这种返回值作为一个`Promise`对象的函数成为`Promise`函数。</span></span><br><span class="line">print(<span class="number">1000</span>,<span class="string">"first"</span>)</span><br><span class="line">.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="keyword">return</span> print(<span class="number">2000</span>,<span class="string">"second"</span>);</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    print(<span class="number">3000</span>,<span class="string">"thrid"</span>);</span><br><span class="line">})</span><br><span class="line"></span><br></pre></td></tr></tbody></table></div></figure>
+
+<p>  <code>Promise</code>构造函数只有一个参数，是一个函数，这个函数在构造后会直接异步执行，所以称之为起始函数。起始函数包括两个参数<code>resolve</code>和<code>reject</code>，调用<code>resolve</code>表示一切正常，而<code>reject</code>是出现异常是所调用的。</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve,reject</span>) </span>{</span><br><span class="line">    <span class="keyword">var</span> a = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">var</span> b= <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="number">0</span>) reject(<span class="string">"Diveide zero"</span>);</span><br><span class="line">    <span class="keyword">else</span> resolve(a/b);</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"a/b = "</span> +value);</span><br><span class="line">}).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>)</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(err);</span><br><span class="line">}).finally(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"END"</span>);</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></div></figure>
+
+<blockquote>
+<p>a/b = 0</p>
+<p>END</p>
+</blockquote>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1111</span>);</span><br><span class="line">    resolve(<span class="number">2222</span>);</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">3333</span>;</span><br><span class="line">}).then(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">"An error"</span>;    <span class="comment">/*reject()参数会传递异常给后面的catch()*/</span></span><br><span class="line">}).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>{</span><br><span class="line">    <span class="built_in">console</span>.log(err);</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></div></figure>
+
+<blockquote>
+<p>  1111</p>
+<p>  2222</p>
+<p>  3333</p>
+<p>  An error</p>
+</blockquote>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> {</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> {</span><br><span class="line">        resolve(<span class="number">1</span>);</span><br><span class="line">    }, <span class="number">1000</span>);</span><br><span class="line">})</span><br><span class="line">    .then(<span class="function">(<span class="params">value</span>) =&gt;</span> {</span><br><span class="line">        <span class="built_in">console</span>.log(value);</span><br><span class="line">        <span class="keyword">return</span> value + <span class="number">10</span>;</span><br><span class="line">    })</span><br><span class="line">    .then(<span class="function">(<span class="params">value</span>) =&gt;</span> {</span><br><span class="line">        <span class="built_in">console</span>.log(value);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> resolve(value + <span class="number">20</span>));</span><br><span class="line">    })</span><br><span class="line">    .then(<span class="function">(<span class="params">value</span>) =&gt;</span> {</span><br><span class="line">        <span class="built_in">console</span>.log(value);</span><br><span class="line">    })</span><br><span class="line">    .catch(<span class="function">(<span class="params">error</span>) =&gt;</span> {</span><br><span class="line">        <span class="built_in">console</span>.log(error);</span><br><span class="line">    });</span><br></pre></td></tr></tbody></table></div></figure></li>
+</ul>
+
+        <h5 id="all">
+          <a href="#all" class="heading-link"><i class="fas fa-link"></i></a><a href="#all" class="headerlink" title="all"></a>all</h5>
+      <ul>
+<li><p>多个<code>promise</code>同时执行</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> <span class="built_in">Promise</span>( <span class="function">(<span class="params">resolve</span>) =&gt;</span>{</span><br><span class="line">    setTImeout( <span class="function">()=&gt;</span>{</span><br><span class="line">        resolve(<span class="number">1</span>);</span><br><span class="line">    },<span class="number">1000</span>);</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> <span class="built_in">Promise</span>( <span class="function">(<span class="params">resovle</span>) =&gt;</span>{</span><br><span class="line">    <span class="built_in">setTimeout</span>( <span class="function">()=&gt;</span>{</span><br><span class="line">        resolve(<span class="number">2</span>);</span><br><span class="line">    },<span class="number">2000</span>);</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> p3 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span>{</span><br><span class="line">    <span class="built_in">setTimeout</span>( <span class="function">()=&gt;</span>{</span><br><span class="line">        resolve(<span class="number">3</span>);</span><br><span class="line">    },<span class="number">500</span>);</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.all( [p1,p2,p3].then(value) =&gt;<span class="built_in">console</span>.log(values) );</span><br></pre></td></tr></tbody></table></div></figure>
+
+<blockquote>
+<p>  只有全部为 resolve 才会调用，通常会用来处理多个并行操作。一个失败就直接抛出并停止全部任务</p>
+</blockquote>
+</li>
+</ul>
+
+        <h5 id="race">
+          <a href="#race" class="heading-link"><i class="fas fa-link"></i></a><a href="#race" class="headerlink" title="race"></a>race</h5>
+      <ul>
+<li>  并发处理多个异步任务，只要有一个任务执行成功，就能得到结果</li>
+</ul>
+
+        <h4 id="async-amp-await">
+          <a href="#async-amp-await" class="heading-link"><i class="fas fa-link"></i></a><a href="#async-amp-await" class="headerlink" title="async &amp; await"></a>async &amp; await</h4>
+      <p>async/await 是 ES7 引进的新语法、本质是 generator的语法糖。</p>
+<ul>
+<li><p>  async 的返回值是 promise的实例对象</p>
+</li>
+<li><p>  await 可以得到异步结果</p>
+</li>
+<li><p>异步函数<code>async function</code>使用<code>await</code>指令，<code>await</code>后跟<code>Promise</code>,异步函数执行到此暂停，知道其运行结束在运行。</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">asyncFunc</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="keyword">await</span> print(<span class="number">1000</span>,<span class="string">"first"</span>);</span><br><span class="line">    <span class="keyword">await</span> print(<span class="number">2000</span>,<span class="string">"second"</span>);</span><br><span class="line">    <span class="keyword">await</span> print(<span class="number">3000</span>,<span class="string">"thrid"</span>);</span><br><span class="line">}</span><br><span class="line">asyncFunc();</span><br></pre></td></tr></tbody></table></div></figure>
+
+</li>
+<li><p>异常处理</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">asyncFunc</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="keyword">try</span>{</span><br><span class="line">        <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve,reject</span>)</span>{</span><br><span class="line">            <span class="keyword">throw</span> <span class="string">"some error"</span>; <span class="comment">//或者    rejeect("some error");</span></span><br><span class="line">        });</span><br><span class="line">    }<span class="keyword">catch</span>(err){</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line">asyncFunc();</span><br></pre></td></tr></tbody></table></div></figure>
+
+</li>
+<li><p>返回值处理</p>
+  <figure class="highlight js"><div class="table-container"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">asyncFunc</span>(<span class="params"></span>)</span>{</span><br><span class="line">    <span class="keyword">let</span> value = <span class="keyword">await</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(</span><br><span class="line">        <span class="function"><span class="keyword">function</span>(<span class="params">resolve,reject</span>)</span>{</span><br><span class="line">            resolve(<span class="string">"return value"</span>);</span><br><span class="line">        }</span><br><span class="line">    );</span><br><span class="line">    <span class="built_in">console</span>.log(value);</span><br><span class="line">}</span><br><span class="line">asyncFunc();</span><br></pre></td></tr></tbody></table></div></figure>
+
+</li>
+</ul>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://solot-raveller.github.io">solotraveller</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://solot-raveller.github.io/2021/03/11/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/">https://solot-raveller.github.io/2021/03/11/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://solot-raveller.github.io/tags/js%E5%85%B3%E4%BA%8E/">js关于</a></span></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/11/%E4%B9%A1%E6%9D%91%E6%B0%91%E8%B0%A3/"><span class="paginator-prev__text">乡村民谣</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">
+          回调函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5ajax"><span class="toc-number">2.</span> <span class="toc-text">
+          异步ajax</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Promise"><span class="toc-number">3.</span> <span class="toc-text">
+          Promise</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#resolve%E5%92%8C-reject"><span class="toc-number">3.1.</span> <span class="toc-text">
+          resolve和 reject</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#then"><span class="toc-number">3.2.</span> <span class="toc-text">
+          then</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#all"><span class="toc-number">3.3.</span> <span class="toc-text">
+          all</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#race"><span class="toc-number">3.4.</span> <span class="toc-text">
+          race</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#async-amp-await"><span class="toc-number">4.</span> <span class="toc-text">
+          async &amp; await</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="https://s3.ax1x.com/2021/03/11/6tE8TU.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">非淡泊无以明志,非宁静无以致远</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="https://plus.google.com/" target="_blank" rel="noopener" data-popover="Google" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-google"></i></span></a><a class="sidebar-ov-social-item" href="https://youtube.com/" target="_blank" rel="noopener" data-popover="Youtube" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-youtube"></i></span></a><a class="sidebar-ov-social-item" href="yournumber" target="_blank" rel="noopener" data-popover="微信" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-weixin"></i></span></a><a class="sidebar-ov-social-item" href="yournumber" target="_blank" rel="noopener" data-popover="QQ" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-qq"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">4</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">4</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">4</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section><div class="sidebar-reading"><div class="sidebar-reading-info"><span class="sidebar-reading-info__text">你已阅读了 </span><span class="sidebar-reading-info__num">0</span><span class="sidebar-reading-info__perc">%</span></div><div class="sidebar-reading-line"></div></div></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>solotraveller</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v5.4.0</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.6.2</span></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="enable:true"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.xml';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);
+
+function safeOpenUrl(url) {
+  var newTab = window.open();
+  newTab.opener = null;
+  newTab.location = url;
+}
+
+function extSearch(engine) {
+  var engines = {
+    google: 'https://www.google.com/search?q=',
+    bing: 'https://cn.bing.com/search?q=',
+    baidu: 'https://www.baidu.com/s?ie=UTF-8&wd=',
+  };
+  var host = window.location.host;
+  var query = $('.search-input input').val().toLowerCase().trim();
+  var uri = engines[engine] + query + ' site:' + host;
+
+  if (query) {
+    safeOpenUrl(uri);
+  } else {
+    Stun.utils.popAlert('warning', '请输入字符');
+  }
+}
+
+var assistSearchList = window.CONFIG.assistSearch;
+
+if (Array.isArray(assistSearchList)) {
+  assistSearchList.forEach(function (name) {
+    document.querySelector('.search-btns-item--' + name).addEventListener('click', function () {
+      extSearch(name);
+    }, false);
+  });
+}</script><script src="/js/utils.js?v=2.6.2"></script><script src="/js/stun-boot.js?v=2.6.2"></script><script src="/js/scroll.js?v=2.6.2"></script><script src="/js/header.js?v=2.6.2"></script><script src="/js/sidebar.js?v=2.6.2"></script><script type="application/json" src="/search.xml"></script></body></html>
